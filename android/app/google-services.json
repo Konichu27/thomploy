@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "679262721077",
+    "project_id": "thomploy-dd289",
+    "storage_bucket": "thomploy-dd289.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679262721077:android:b4f536965a7dd2ab1f8d7c",
+        "android_client_info": {
+          "package_name": "com.example.thomploy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVyqENqYbBHFRkb9cuYkQ3xfkfWJLlJy4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
