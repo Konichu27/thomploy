@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' show BorderRadius, BorderSide, BuildContext, Colors, Column, CrossAxisAlignment, EdgeInsets, ElevatedButton, FontWeight, GestureDetector, Icon, Icons, InputDecoration, Key, MainAxisAlignment, MaterialPageRoute, Navigator, OutlineInputBorder, Padding, RoundedRectangleBorder, Row, SafeArea, Scaffold, Size, SizedBox, StatelessWidget, Text, TextField, TextStyle, Widget;
 import 'signup_page.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -114,4 +116,3 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
-
