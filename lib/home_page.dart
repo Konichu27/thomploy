@@ -1,29 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:thomploy/explore_search_pages.dart';
-import 'test/EditProfileScreen.dart';
-import 'test/UserProfileScreen.dart';
-import 'components.dart';
+import 'package:thomploy/explore_page.dart';
+import 'package:firebase_auth/firebase_auth.dart'
+    hide EmailAuthProvider, PhoneAuthProvider;
+
+import 'edit_profile_page.dart';
+import 'user_profile_page.dart';
+import 'src/components.dart';
 import 'search_page.dart';
-
-void main() {
-  runApp(const ThomployApp());
-}
-
-class ThomployApp extends StatelessWidget {
-  const ThomployApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Thomploy',
-      theme: ThemeData(
-        primaryColor: Colors.amber,
-        scaffoldBackgroundColor: const Color(0xFFFFC107),
-      ),
-      home: const HomePage(),
-    );
-  }
-}
+import 'dev_page.dart';
+import 'chat_list_page.dart';
+import 'package:provider/provider.dart';
+import 'app_state.dart';
+import 'src/authentication.dart';
+import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,70 +26,109 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: const Center(
-            child: Text(
-              'thomploy',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+    return Consumer<ApplicationState>(
+      builder: (context, appState, _) {
+        return SafeArea(
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              title: const Image(
+                height: 48,
+                image: AssetImage('assets/launcher/logo.png'),
               ),
             ),
-          ),
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _selectedTab,
-          onDestinationSelected: (int index) {
-            setState(() {
-              _selectedTab = index;
-            });
-          },
-          destinations: const <Widget>[
-            NavigationDestination(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              label: 'Profile',
-            ),
-          ],
-        ),
-        body: <Widget>[
-          ExploreSearchPages(),
-          SearchPage(),
-          UserProfileScreen(),
-              /*// White header container with centered logo
-              Container(
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 24.0),
-                child: const Center(
-                  child: Text(
-                    'thomploy',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+            drawer: Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  const DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                    ),
+                    child: Text(
+                      'Menu',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                      ),
                     ),
                   ),
-                ),
+                  ListTile(
+                    leading: const Icon(Icons.developer_mode),
+                    title: const Text('Developers Page'),
+                    onTap: () {
+                      // Navigate to Developers Page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DevelopersPage()),
+                      );
+                    },
+                  ),
+                  if (appState.loggedIn) ...[
+                    ListTile(
+                      leading: const Icon(Icons.chat),
+                      title: const Text('Chats'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ChatListPage()),
+                        );
+                      },
+                    ),
+                  ],
+                  Consumer<ApplicationState>( // auth tile
+                    builder: (context, appState, _) => AuthListTile(
+                      loggedIn: appState.loggedIn,
+                      signOut: () {
+                        FirebaseAuth.instance.signOut();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Successfully logged out')),
+                        );
+                      },
+                      username: appState.username,
+                    ),
+                  ),
+                ],
               ),
-              // Bottom Navigation Bar
-              buildBottomNavigationBar(context, _selectedTab, (index) {
+            ),
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: _selectedTab,
+              onDestinationSelected: (int index) {
                 setState(() {
                   _selectedTab = index;
                 });
-              }),*/
-        ][_selectedTab],
-      ),
+              },
+              destinations: const <Widget>[
+                NavigationDestination(
+                  icon: Icon(Icons.home, size: 30),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search, size: 30),
+                  label: 'Search',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.person_outline, size: 30),
+                  label: 'Profile',
+                ),
+              ],
+            ),
+            body: <Widget>[
+              ExplorePage(),
+              SearchPage(),
+              Consumer<ApplicationState>( // user profile page with auth
+                builder: (context, appState, _) => UserProfilePage(
+                  loggedIn: appState.loggedIn,
+                  username: appState.username,
+                  email: appState.email,
+                ),
+              ),
+            ][_selectedTab],
+          ),
+        );
+      },
     );
   }
 }

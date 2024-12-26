@@ -21,6 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.transparent), // for back button only
+      resizeToAvoidBottomInset: false, 
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -31,14 +33,9 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Logo
-                const Text(
-                  'ThomPloy',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontFamily: 'Arial',
-                  ),
+                Image.asset(
+                  'assets/launcher/logo_circle.png',
+                  height: 100,
                 ),
                 const SizedBox(height: 20),
                 // Heading
@@ -112,6 +109,9 @@ class _LoginPageState extends State<LoginPage> {
                       if (user != null) {
                         if (!context.mounted) return; // Ensure the widget is still mounted
                         Navigator.pop(context); // Return to home page
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Successfully logged in')),
+                        );
                       } else {
                         // Show an error message
                         if (!context.mounted) return; // Ensure the widget is still mounted

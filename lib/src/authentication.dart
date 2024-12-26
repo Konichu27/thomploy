@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:thomploy/login_page.dart';
+import 'package:flutter/services.dart';
 
-import 'widgets.dart';
-
-class AuthFunc extends StatelessWidget {
-  const AuthFunc({
+class AuthListTile extends StatelessWidget {
+  const AuthListTile({
     super.key,
     required this.loggedIn,
     required this.signOut,
@@ -22,31 +22,25 @@ class AuthFunc extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24, bottom: 8),
-          child: StyledButton(
-              onPressed: () {
-                if (!loggedIn) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                } else { signOut(); }
-              },
-              child: !loggedIn ? const Text('Login') : const Text('Logout')),
-        ),
-        // This Visibility widget is for debugging only
-        // i.e. to check the session username
-        Visibility(
-          visible: loggedIn,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 24, bottom: 8),
-            child: Text(username),
-          ),
-        ),
-      ],
+    return ListTile(
+      leading: !loggedIn ? const Icon(Icons.login) : const Icon(Icons.logout),
+      title: !loggedIn ? const Text('Log In') : const Text('Log Out'), // should read logout in actual sessions
+      onTap: () {
+        if (!loggedIn) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+          );
+        } else {
+          Navigator.pop(context);
+          FirebaseAuth.instance.signOut();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Successfully logged out'),
+            ),
+          );
+        }
+      },
     );
   }
 }
@@ -61,16 +55,10 @@ Future<User?> signIn({
       password: password,
     );
     return userCredential.user;
-  } on FirebaseAuthException catch (e) {
-    if (e.code == 'user-not-found') {
-      print('No user found for that email.');
-    } else if (e.code == 'wrong-password') {
-      print('Wrong password provided for that user.');
-    }
+  } on Exception catch (e) {
+    return null;
   }
-  return null;
 }
-
 
 Future<User?> signUpWithEmailPassword({
     required String email,
@@ -106,16 +94,11 @@ Future<User?> signUp({
   if (user != null) {
     await user.updateDisplayName(username);
   }
+  await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
+    'userId': user.uid,
+    'username': username,
+    'email': email,
+    'chats': FieldValue.arrayUnion([]),
+  });
   return user;
-}
-
-Future<void> updateUsername({
-    required String username,
-  }) async {
-  User? user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    await user.updateDisplayName(username);
-    await user.reload();
-    user = FirebaseAuth.instance.currentUser;
-  }
 }

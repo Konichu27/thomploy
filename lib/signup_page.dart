@@ -18,6 +18,8 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.transparent), // for back button only
+      resizeToAvoidBottomInset: false, 
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -28,13 +30,9 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Logo
-                const Text(
-                  'ThomPloy',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                Image.asset(
+                  'assets/launcher/logo_circle.png',
+                  height: 100,
                 ),
                 const SizedBox(height: 20),
                 // Heading
@@ -128,6 +126,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       );
                       if (user != null) {
                         if (!context.mounted) return; // Ensure the widget is still mounted
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Account successfully created. Please log in.'),
+                          ),
+                        );
                         Navigator.pop(context); // Return to home page
                       } else {
                         // Show an error message

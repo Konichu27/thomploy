@@ -47,6 +47,7 @@ class DefaultFirebaseOptions {
     projectId: 'thomploy-dd289',
     authDomain: 'thomploy-dd289.firebaseapp.com',
     storageBucket: 'thomploy-dd289.firebasestorage.app',
+    measurementId: 'G-7S8FPY1WJ0',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -82,5 +83,7 @@ class DefaultFirebaseOptions {
     projectId: 'thomploy-dd289',
     authDomain: 'thomploy-dd289.firebaseapp.com',
     storageBucket: 'thomploy-dd289.firebasestorage.app',
+    measurementId: 'G-FLBEQBNKXB',
   );
+
 }
